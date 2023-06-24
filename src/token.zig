@@ -27,7 +27,7 @@ pub const TokenType = enum {
 };
 
 pub const Token = struct {
-    token_type: TokenType = .illegal,
+    token_type: TokenType,
     literal: []const u8,
 
     pub fn init(token_type: TokenType, literal: []const u8) Token {
@@ -37,3 +37,15 @@ pub const Token = struct {
         };
     }
 };
+
+const keywords = std.ComptimeStringMap(TokenType, .{
+    .{ "fn", .function },
+    .{ "let", .let },
+});
+
+pub fn lookup_ident(ident: []const u8) TokenType {
+    if (keywords.has(ident)) {
+        return keywords.get(ident).?;
+    }
+    return .ident;
+}

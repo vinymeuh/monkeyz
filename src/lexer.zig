@@ -23,18 +23,34 @@ const Lexer = struct {
 
     pub fn next_token(self: *Lexer) Token {
         var tok: Token = undefined;
-        var sch = [_]u8{self.ch};
+
+        self.skip_whitespaces();
+
+        var sch = &[_]u8{self.ch}; // TODO: fix
         switch (self.ch) {
-            '=' => tok = Token.init(TokenType.assign, &sch),
-            '+' => tok = Token.init(TokenType.plus, &sch),
-            '(' => tok = Token.init(TokenType.lparen, &sch),
-            ')' => tok = Token.init(TokenType.rparen, &sch),
-            '{' => tok = Token.init(TokenType.lbrace, &sch),
-            '}' => tok = Token.init(TokenType.rbrace, &sch),
-            ',' => tok = Token.init(TokenType.comma, &sch),
-            ';' => tok = Token.init(TokenType.semicolon, &sch),
+            '=' => tok = Token.init(TokenType.assign, "="),
+            '+' => tok = Token.init(TokenType.plus, "+"),
+            '(' => tok = Token.init(TokenType.lparen, "("),
+            ')' => tok = Token.init(TokenType.rparen, ")"),
+            '{' => tok = Token.init(TokenType.lbrace, "{"),
+            '}' => tok = Token.init(TokenType.rbrace, "}"),
+            ',' => tok = Token.init(TokenType.comma, ","),
+            ';' => tok = Token.init(TokenType.semicolon, ";"),
             0 => tok = Token.init(TokenType.eof, ""),
-            else => tok = Token.init(TokenType.illegal, &sch),
+            else => {
+                if (is_letter(self.ch)) {
+                    var literal = self.read_identifer();
+                    var token_type = token.lookup_ident(literal);
+                    tok = Token.init(token_type, literal);
+                    return tok;
+                } else if (is_digit(self.ch)) {
+                    var literal = self.read_number();
+                    tok = Token.init(TokenType.int, literal);
+                    return tok;
+                } else {
+                    tok = Token.init(TokenType.illegal, sch);
+                }
+            },
         }
 
         self.read_char();
@@ -50,7 +66,37 @@ const Lexer = struct {
         self.current_position = self.next_position;
         self.next_position += 1;
     }
+
+    fn read_identifer(self: *Lexer) []const u8 {
+        var begin = self.current_position;
+        while (is_letter(self.ch)) {
+            self.read_char();
+        }
+        return self.input[begin..self.current_position];
+    }
+
+    fn read_number(self: *Lexer) []const u8 {
+        var begin = self.current_position;
+        while (is_digit(self.ch)) {
+            self.read_char();
+        }
+        return self.input[begin..self.current_position];
+    }
+
+    fn skip_whitespaces(self: *Lexer) void {
+        while (self.ch == ' ' or self.ch == '\t' or self.ch == '\n' or self.ch == '\r') {
+            self.read_char();
+        }
+    }
 };
+
+fn is_letter(ch: u8) bool {
+    return ('a' <= ch and ch <= 'z') or ('A' <= ch and ch <= 'Z') or ch == '_';
+}
+
+fn is_digit(ch: u8) bool {
+    return '0' <= ch and ch <= '9';
+}
 
 test "NextToken" {
     const tests = [_]struct {
@@ -58,15 +104,52 @@ test "NextToken" {
         tokens: []const Token,
     }{
         .{
-            .input = "=+(){},;",
+            .input =
+            \\let five = 5;
+            \\let ten = 10;
+            \\
+            \\let add = fn(x, y) {
+            \\ x + y;
+            \\};
+            \\
+            \\let result = add(five, ten);
+            ,
             .tokens = &[_]Token{
+                Token.init(TokenType.let, "let"),
+                Token.init(TokenType.ident, "five"),
+                Token.init(TokenType.assign, "="), // ?
+                Token.init(TokenType.int, "5"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.let, "let"),
+                Token.init(TokenType.ident, "ten"),
                 Token.init(TokenType.assign, "="),
-                Token.init(TokenType.plus, "+"),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.let, "let"),
+                Token.init(TokenType.ident, "add"),
+                Token.init(TokenType.assign, "="),
+                Token.init(TokenType.function, "fn"),
                 Token.init(TokenType.lparen, "("),
+                Token.init(TokenType.ident, "x"),
+                Token.init(TokenType.comma, ","),
+                Token.init(TokenType.ident, "y"),
                 Token.init(TokenType.rparen, ")"),
                 Token.init(TokenType.lbrace, "{"),
+                Token.init(TokenType.ident, "x"),
+                Token.init(TokenType.plus, "+"),
+                Token.init(TokenType.ident, "y"),
+                Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.rbrace, "}"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.let, "let"),
+                Token.init(TokenType.ident, "result"),
+                Token.init(TokenType.assign, "="),
+                Token.init(TokenType.ident, "add"),
+                Token.init(TokenType.lparen, "("),
+                Token.init(TokenType.ident, "five"),
                 Token.init(TokenType.comma, ","),
+                Token.init(TokenType.ident, "ten"),
+                Token.init(TokenType.rparen, ")"),
                 Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.eof, ""),
             },
