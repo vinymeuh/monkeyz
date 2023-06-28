@@ -26,16 +26,20 @@ const Lexer = struct {
 
         self.skip_whitespaces();
 
-        var sch = &[_]u8{self.ch}; // TODO: fix
+        var buf: [2]u8 = undefined;
+        const sch = std.fmt.bufPrint(&buf, "{u}", .{self.ch}) catch {
+            unreachable;
+        };
+
         switch (self.ch) {
-            '=' => tok = Token.init(TokenType.assign, "="),
-            '+' => tok = Token.init(TokenType.plus, "+"),
-            '(' => tok = Token.init(TokenType.lparen, "("),
-            ')' => tok = Token.init(TokenType.rparen, ")"),
-            '{' => tok = Token.init(TokenType.lbrace, "{"),
-            '}' => tok = Token.init(TokenType.rbrace, "}"),
-            ',' => tok = Token.init(TokenType.comma, ","),
-            ';' => tok = Token.init(TokenType.semicolon, ";"),
+            '=' => tok = Token.init(TokenType.assign, sch),
+            '+' => tok = Token.init(TokenType.plus, sch),
+            '(' => tok = Token.init(TokenType.lparen, sch),
+            ')' => tok = Token.init(TokenType.rparen, sch),
+            '{' => tok = Token.init(TokenType.lbrace, sch),
+            '}' => tok = Token.init(TokenType.rbrace, sch),
+            ',' => tok = Token.init(TokenType.comma, sch),
+            ';' => tok = Token.init(TokenType.semicolon, sch),
             0 => tok = Token.init(TokenType.eof, ""),
             else => {
                 if (is_letter(self.ch)) {
@@ -117,7 +121,7 @@ test "NextToken" {
             .tokens = &[_]Token{
                 Token.init(TokenType.let, "let"),
                 Token.init(TokenType.ident, "five"),
-                Token.init(TokenType.assign, "="), // ?
+                Token.init(TokenType.assign, "="),
                 Token.init(TokenType.int, "5"),
                 Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.let, "let"),
