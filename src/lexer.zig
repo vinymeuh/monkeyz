@@ -26,40 +26,35 @@ const Lexer = struct {
 
         self.skip_whitespaces();
 
-        var buf: [2]u8 = undefined;
-        const sch = std.fmt.bufPrint(&buf, "{u}", .{self.ch}) catch {
-            unreachable;
-        };
-
         switch (self.ch) {
             '=' => {
                 if (self.peek_char() == '=') {
                     self.read_char();
                     tok = Token.init(TokenType.eq, "==");
                 } else {
-                    tok = Token.init(TokenType.assign, sch);
+                    tok = Token.init(TokenType.assign, "=");
                 }
             },
-            '+' => tok = Token.init(TokenType.plus, sch),
-            '-' => tok = Token.init(TokenType.minus, sch),
+            '+' => tok = Token.init(TokenType.plus, "+"),
+            '-' => tok = Token.init(TokenType.minus, "-"),
             '!' => {
                 if (self.peek_char() == '=') {
                     self.read_char();
                     tok = Token.init(TokenType.neq, "!=");
                 } else {
-                    tok = Token.init(TokenType.bang, sch);
+                    tok = Token.init(TokenType.bang, "!");
                 }
             },
-            '*' => tok = Token.init(TokenType.asterisk, sch),
-            '/' => tok = Token.init(TokenType.slash, sch),
-            '<' => tok = Token.init(TokenType.lt, sch),
-            '>' => tok = Token.init(TokenType.gt, sch),
-            ',' => tok = Token.init(TokenType.comma, sch),
-            ';' => tok = Token.init(TokenType.semicolon, sch),
-            '(' => tok = Token.init(TokenType.lparen, sch),
-            ')' => tok = Token.init(TokenType.rparen, sch),
-            '{' => tok = Token.init(TokenType.lbrace, sch),
-            '}' => tok = Token.init(TokenType.rbrace, sch),
+            '*' => tok = Token.init(TokenType.asterisk, "*"),
+            '/' => tok = Token.init(TokenType.slash, "/"),
+            '<' => tok = Token.init(TokenType.lt, "<"),
+            '>' => tok = Token.init(TokenType.gt, ">"),
+            ',' => tok = Token.init(TokenType.comma, ","),
+            ';' => tok = Token.init(TokenType.semicolon, ";"),
+            '(' => tok = Token.init(TokenType.lparen, "("),
+            ')' => tok = Token.init(TokenType.rparen, ")"),
+            '{' => tok = Token.init(TokenType.lbrace, "{"),
+            '}' => tok = Token.init(TokenType.rbrace, "}"),
             0 => tok = Token.init(TokenType.eof, ""),
             else => {
                 if (is_letter(self.ch)) {
@@ -72,6 +67,10 @@ const Lexer = struct {
                     tok = Token.init(TokenType.int, literal);
                     return tok;
                 } else {
+                    var buf: [2]u8 = undefined;
+                    const sch = std.fmt.bufPrint(&buf, "{u}", .{self.ch}) catch {
+                        unreachable;
+                    };
                     tok = Token.init(TokenType.illegal, sch);
                 }
             },
