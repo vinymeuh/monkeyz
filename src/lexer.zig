@@ -34,12 +34,18 @@ const Lexer = struct {
         switch (self.ch) {
             '=' => tok = Token.init(TokenType.assign, sch),
             '+' => tok = Token.init(TokenType.plus, sch),
+            '-' => tok = Token.init(TokenType.minus, sch),
+            '!' => tok = Token.init(TokenType.bang, sch),
+            '*' => tok = Token.init(TokenType.asterisk, sch),
+            '/' => tok = Token.init(TokenType.slash, sch),
+            '<' => tok = Token.init(TokenType.lt, sch),
+            '>' => tok = Token.init(TokenType.gt, sch),
+            ',' => tok = Token.init(TokenType.comma, sch),
+            ';' => tok = Token.init(TokenType.semicolon, sch),
             '(' => tok = Token.init(TokenType.lparen, sch),
             ')' => tok = Token.init(TokenType.rparen, sch),
             '{' => tok = Token.init(TokenType.lbrace, sch),
             '}' => tok = Token.init(TokenType.rbrace, sch),
-            ',' => tok = Token.init(TokenType.comma, sch),
-            ';' => tok = Token.init(TokenType.semicolon, sch),
             0 => tok = Token.init(TokenType.eof, ""),
             else => {
                 if (is_letter(self.ch)) {
@@ -117,6 +123,8 @@ test "NextToken" {
             \\};
             \\
             \\let result = add(five, ten);
+            \\!-/*5;
+            \\5 < 10 > 5;
             ,
             .tokens = &[_]Token{
                 Token.init(TokenType.let, "let"),
@@ -154,6 +162,18 @@ test "NextToken" {
                 Token.init(TokenType.comma, ","),
                 Token.init(TokenType.ident, "ten"),
                 Token.init(TokenType.rparen, ")"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.bang, "!"),
+                Token.init(TokenType.minus, "-"),
+                Token.init(TokenType.slash, "/"),
+                Token.init(TokenType.asterisk, "*"),
+                Token.init(TokenType.int, "5"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.int, "5"),
+                Token.init(TokenType.lt, "<"),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.gt, ">"),
+                Token.init(TokenType.int, "5"),
                 Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.eof, ""),
             },

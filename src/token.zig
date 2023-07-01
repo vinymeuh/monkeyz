@@ -11,6 +11,13 @@ pub const TokenType = enum {
     // Operators
     assign,
     plus,
+    minus,
+    bang,
+    asterisk,
+    slash,
+
+    lt,
+    gt,
 
     // Delimiters
     comma,
