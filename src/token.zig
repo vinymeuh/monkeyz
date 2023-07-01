@@ -31,6 +31,11 @@ pub const TokenType = enum {
     // Keywords
     function,
     let,
+    true,
+    false,
+    _if,
+    _else,
+    _return,
 };
 
 pub const Token = struct {
@@ -48,6 +53,11 @@ pub const Token = struct {
 const keywords = std.ComptimeStringMap(TokenType, .{
     .{ "fn", .function },
     .{ "let", .let },
+    .{ "true", .true },
+    .{ "false", .false },
+    .{ "if", ._if },
+    .{ "else", ._else },
+    .{ "return", ._return },
 });
 
 pub fn lookup_ident(ident: []const u8) TokenType {

@@ -125,6 +125,11 @@ test "NextToken" {
             \\let result = add(five, ten);
             \\!-/*5;
             \\5 < 10 > 5;
+            \\if (5 < 10) {
+            \\  return true;
+            \\} else {
+            \\  return false;
+            \\}
             ,
             .tokens = &[_]Token{
                 Token.init(TokenType.let, "let"),
@@ -175,6 +180,23 @@ test "NextToken" {
                 Token.init(TokenType.gt, ">"),
                 Token.init(TokenType.int, "5"),
                 Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType._if, "if"),
+                Token.init(TokenType.lparen, "("),
+                Token.init(TokenType.int, "5"),
+                Token.init(TokenType.lt, "<"),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.rparen, ")"),
+                Token.init(TokenType.lbrace, "{"),
+                Token.init(TokenType._return, "return"),
+                Token.init(TokenType.true, "true"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.rbrace, "}"),
+                Token.init(TokenType._else, "else"),
+                Token.init(TokenType.lbrace, "{"),
+                Token.init(TokenType._return, "return"),
+                Token.init(TokenType.false, "false"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.rbrace, "}"),
                 Token.init(TokenType.eof, ""),
             },
         },
