@@ -19,6 +19,9 @@ pub const TokenType = enum {
     lt,
     gt,
 
+    eq,
+    neq,
+
     // Delimiters
     comma,
     semicolon,

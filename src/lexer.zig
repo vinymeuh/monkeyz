@@ -32,10 +32,24 @@ const Lexer = struct {
         };
 
         switch (self.ch) {
-            '=' => tok = Token.init(TokenType.assign, sch),
+            '=' => {
+                if (self.peek_char() == '=') {
+                    self.read_char();
+                    tok = Token.init(TokenType.eq, "==");
+                } else {
+                    tok = Token.init(TokenType.assign, sch);
+                }
+            },
             '+' => tok = Token.init(TokenType.plus, sch),
             '-' => tok = Token.init(TokenType.minus, sch),
-            '!' => tok = Token.init(TokenType.bang, sch),
+            '!' => {
+                if (self.peek_char() == '=') {
+                    self.read_char();
+                    tok = Token.init(TokenType.neq, "!=");
+                } else {
+                    tok = Token.init(TokenType.bang, sch);
+                }
+            },
             '*' => tok = Token.init(TokenType.asterisk, sch),
             '/' => tok = Token.init(TokenType.slash, sch),
             '<' => tok = Token.init(TokenType.lt, sch),
@@ -75,6 +89,14 @@ const Lexer = struct {
         }
         self.current_position = self.next_position;
         self.next_position += 1;
+    }
+
+    fn peek_char(self: *Lexer) u8 {
+        if (self.next_position >= self.input.len) {
+            return 0;
+        } else {
+            return self.input[self.next_position];
+        }
     }
 
     fn read_identifer(self: *Lexer) []const u8 {
@@ -130,6 +152,8 @@ test "NextToken" {
             \\} else {
             \\  return false;
             \\}
+            \\10 == 10;
+            \\10 != 9;
             ,
             .tokens = &[_]Token{
                 Token.init(TokenType.let, "let"),
@@ -197,6 +221,14 @@ test "NextToken" {
                 Token.init(TokenType.false, "false"),
                 Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.rbrace, "}"),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.eq, "=="),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.semicolon, ";"),
+                Token.init(TokenType.int, "10"),
+                Token.init(TokenType.neq, "!="),
+                Token.init(TokenType.int, "9"),
+                Token.init(TokenType.semicolon, ";"),
                 Token.init(TokenType.eof, ""),
             },
         },
