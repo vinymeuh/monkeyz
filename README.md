@@ -5,6 +5,10 @@ Learning [Zig](https://ziglang.org/) reimplementing the Monkey language interpre
 Work in progress:
 
 * [ ] Lexing
+
+  * [x] Tokens and Lexer
+  * [ ] Start of a REPL
+
 * [ ] Parsing
 * [ ] Evaluation
 * [ ] Extending the Interpreter
