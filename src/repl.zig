@@ -1,5 +1,12 @@
 const std = @import("std");
 
+const lexer = @import("lexer.zig");
+const Lexer = lexer.Lexer;
+
+const token = @import("token.zig");
+const Token = token.Token;
+const TokenType = token.TokenType;
+
 const Prompt = ">> ";
 
 pub fn start(in: std.fs.File.Reader, out: std.fs.File.Writer) !void {
@@ -13,6 +20,11 @@ pub fn start(in: std.fs.File.Reader, out: std.fs.File.Writer) !void {
             break;
         }
         var line = msg.?;
-        std.debug.print("msg: {s}\n", .{line});
+
+        var l = Lexer.init(line);
+        var tok: Token = l.next_token();
+        while (tok.token_type != TokenType.eof) : (tok = l.next_token()) {
+            std.debug.print("{}\n", .{tok});
+        }
     }
 }

@@ -4,7 +4,7 @@ const token = @import("token.zig");
 const Token = token.Token;
 const TokenType = token.TokenType;
 
-const Lexer = struct {
+pub const Lexer = struct {
     input: []const u8,
     current_position: usize, // current position in input (points to current char)
     next_position: usize, // next reading position in input (points after current char)

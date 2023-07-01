@@ -4,10 +4,10 @@ Learning [Zig](https://ziglang.org/) reimplementing the Monkey language interpre
 
 Work in progress:
 
-* [ ] Lexing
+* [x] Lexing
 
   * [x] Tokens and Lexer
-  * [ ] Start of a REPL
+  * [x] Start of a REPL
 
 * [ ] Parsing
 * [ ] Evaluation
